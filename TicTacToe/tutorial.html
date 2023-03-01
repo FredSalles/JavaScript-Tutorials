@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Thimble Project Tutorial</title>
+    <link rel="stylesheet" type="text/css" href="https://thimble.mozilla.org/tutorial/tutorial.css">
+  </head>
+
+  <body>
+    <div class="tutorial">
+      <h1>Project Tutorial</h1>
+      <p>
+        This project is a classic TicTacToe game that can be played right away with a friend. Visual design is entirely based on <code>&lt;div&gt;</code> CSS styling and animations <code>(Transform, Transition)</code>. Each empty board square <code>&lt;div&gt;</code> registers a <code>onclick()</code> function that will alternatively trigger crosses and circles <code>&lt;div&gt;</code> placement animation on the board. The <code>index.html</code> only contains one initial board <code>&lt;div&gt;</code>, the board squares are all dynamically inserted into the <code>DOM</code> when the <code>load()</code> function is called.
+      </p>
+
+      <p>
+        In this version, the game ends when all squares have been filled, trigering a board cleanup animation <code>cleanup()</code> function. There is no game state maintained other than a counter <code>count</code> to stop the game when all nine squares have been filled. The entire game logic is click-events driven, see <code>onclick(source)</code> function. 
+      <p>
+        One feature this game lacks off is the ability to detect that one of the players won (completed a vertical, horizontal or diagonal line of only circles or crosses).
+      </p>
+
+      <p>
+        This tutorial provides step-by-step instructions to remix the project, for the purpose of making the game smart enough to detect when one player won. To achieve this, two  enhancements need to be made:
+      </p>
+      
+      <li>The current game state, or <code>model</code>, needs to be maintained, so as to track where on the board crosses and circles get placed.
+      </li>
+      
+      <li>An <code>algoritm</code> must be implemented to analyse the game <code>model</code> after each move, so as to detect whether a player won.
+      </li>
+
+      <h3>Step-by-Step Instructions</h3>
+      <ol class="steps">
+        <li>
+          <p>
+          First step will be to define a data structure to capture the current game state. One option is to declare a two dimensional array <code>game[][]</code>, composed of 3 rows with 3 columns each. Each value of the array will correspond to a unique square on the board, indentified by its row number (from 0 to 2) and its column number (from 0 to 2). Valid values to represent the current state of a square in the array will be either "empty", "cross" or "circle".
+          </p>
+          
+<pre class="code">var game = new Array(3);
+for (row=0; row &lt; 3; row++)
+   game[row] = new Array(3).fill("empty");
+console.log(game);
+</pre>
+          <p>
+            In this data model,<br>
+            • The top left square (row 0, column 0) state will be stored in <code>game[0][0]</code>.<br>• The center square (row 1, column 1) state will be stored in <code>game[1][1]</code>.<br>• The bottom right square (row 2, column 2) state will be stored in <code>game[2][2]</code>.<br>etc...
+          </p>
+          <p>
+          At the beginning of a game, all squares should be marked as empty. A console statement to print the array content after initialization should give the following output:
+          </p>
+          
+          <code>[["empty","empty","empty"],["empty","empty","empty"],["empty","empty","empty"]]
+          </code>
+        </li>
+        
+        <li>
+          <p>
+            Next step, now that a model has been defined to keep track of the game state, it needs to be updated everytime a player places a new circle or cross on one of the board square. The <code>onclick(source)</code> function already calculates which <code>row</code> and <code>column</code> a player clicked in, this information can be leveraged to update the state array accordingly. In the case were a circle has been placed:
+          </p>
+          
+<pre class="code">game[row][col] = 'circle';
+console.log(game);
+</pre>
+          <p>
+            In the case were a cross was  placed:
+          </p>
+
+<pre class="code">game[row][col] = 'cross';
+console.log(game);
+</pre>
+          <p>
+            Now, as the game develops, console statements that print the array content should reflect the corresponding evolving game state. For example:
+          </p>
+          
+          <code>[["circle","cross","circle"],["empty","circle","cross"],["circle","cross","empty"]]
+          </code>
+        </li>
+        
+        <li>
+          <p>
+            As a last step for this remix, we must now write a <code>checkGame()</code> function that will check whether a player won the game after each state change. They are different ways to process the array data to find out whether any row, column or diagonal line as been filled with three circles or crosses. Here is one example of how that can be done: 
+          </p>
+          
+<pre class="code">function checkGame() {
+  //
+  // rows and columns
+  //
+  var over = 0;
+  for (i=0; i &lt;3; i++) {
+    if (((game[i][0] === game[i][1]) && (game[i][1] === game[i][2]) && (game[i][0] !== "empty")) ||
+        ((game[0][i] === game[1][i]) && (game[1][i] === game[2][i]) && (game[0][i] !== "empty"))){
+            over = 1;
+            break;
+    }
+  }
+  //
+  // diagonals
+  //
+  if (((game[0][0] === game[1][1]) && (game[1][1] === game[2][2]) && (game[0][0] !== "empty")) ||
+      ((game[0][2] === game[1][1]) && (game[1][1] === game[2][0]) && (game[0][2] !== "empty"))) {
+         over = 1;
+  }
+  //
+  // game over !
+  //
+  if (over === 1) {
+      setTimeout('cleanup();', 1000);
+  }
+}
+</pre>
+          <pe>
+            Of course, we must not forget to call the <code>checkGame()</code> function each time the board <code>model</code> changes. A good place for this would be at the end of  the <code>update(type, id)</code> function.
+          </pe>
+          
+<pre class="code">checkGame();
+</pre>
+          
+        </li>
+        <li>
+          <p>
+          Congratulations for completing the project and remixing the Web ! What could be next... How about an algorithm that would make the game play against yourself ? In any case, enjoy, keep on remixing and share !
+          </p>
+        </li>
+      </ol>
+    </div>
+  </body>
+</html>
